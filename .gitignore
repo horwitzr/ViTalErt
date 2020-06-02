@@ -2,3 +2,5 @@
 *.docx
 *.doc
 __pycache__
+/.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
