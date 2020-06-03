@@ -4,5 +4,5 @@ def getVTEicd9codes():
             '451.9', '451.90', '453.1', '453.10', '453.2', '453.20', '453.4', '453.40', '453.41', \
            '453.42', '453.6', '453.60', '453.8', '453.80', '453.89', '453.9', '453.90'] # excludes chronic
   icd9_acute_dvt = ['453.4', '453.89']
-  icd9_vte = icd9_pe + icd9_acute_dvt
+  icd9_vte = icd9_pe + icd9_dvt
   return icd9_vte
