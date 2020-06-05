@@ -12,7 +12,7 @@
 streamlit_status = 2
 do_plots = 0
 
-dir_read = '/Users/rachellehorwitz/Documents/VTAlert/data/filtered02/'
+dir_read = '/Users/rachellehorwitz/Documents/ViTalErt/data/filtered02/'
 #dir_read = '/Users/rachellehorwitz/Documents/VTAlert/over18_eicu/'
 
 from sklearn.linear_model import LogisticRegression

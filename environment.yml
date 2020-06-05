@@ -1,4 +1,4 @@
-name: VTAlert
+name: ViTalErt
 channels:
 - conda-forge
 dependencies:
