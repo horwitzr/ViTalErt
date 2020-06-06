@@ -9,7 +9,7 @@
 # 0 = no streamlit
 # 1 = test user inputs
 # 2 = run in streamlit
-streamlit_status = 1
+streamlit_status = 2
 do_plots = 0
 
 #dir_read = '/Users/rachellehorwitz/Documents/ViTalErt/data/filtered02/'
