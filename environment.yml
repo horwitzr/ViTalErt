@@ -9,6 +9,7 @@ dependencies:
 - seaborn
 - scipy
 - scikit-learn
+- pickle
 - pip
 - pip:
   - streamlit
