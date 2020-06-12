@@ -1,6 +1,7 @@
 /data
 *.docx
 *.doc
+*.png
 __pycache__
 /.ipynb_checkpoints/
 #notebooks/.ipynb_checkpoints/
