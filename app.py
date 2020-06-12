@@ -28,7 +28,6 @@ import streamlit as st
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import plot_confusion_matrix
 import pickle
-from pyprojroot import here
 
 #file_name_pickle_read = 'models/model_2020_06_11_1923_week3.pickle'
 #file_name_pickle_read = 'models/model_2020_06_11_1934.pickle'
