@@ -32,83 +32,48 @@ import pickle
 #file_name_pickle_read = 'models/model_2020_06_11_1923_week3.pickle'
 #file_name_pickle_read = 'models/model_2020_06_11_1934.pickle'
 
+# def file_selector(folder_path='app/'):
+#     filenames = os.listdir(folder_path)
+#     selected_filename = st.selectbox('Select a file', filenames)
+#     return os.path.join(folder_path, selected_filename)
+
+
+
 
 #
 st.title('ViTalErt: Risk Monitoring for Venous Thromboembolism in ICU Patients')
 
-patientName= st.radio("Patient Number", ['Patient1', 'Patient2'])
-st.write('You selected ' + patientName)
-st.write('-----')
+filename = st.file_uploader("Choose a csv file", type='csv')
+# st.write('You selected `%s`' % filename)
 
-X_patient = pd.read_csv(patientName + '.csv')
-st.write('Age: ' + str(X_patient.iloc[0]['age']))
-st.write('Admission Weight: ' + str(X_patient.iloc[0]['admissionweight']) + ' kg')
-st.write('Admission Height: ' + str(X_patient.iloc[0]['admissionheight']) + ' cm')
-st.write('Admission Weight: ' + str(X_patient.iloc[0]['admissionweight']) + ' kg')
-st.write('BMI: {:.2f} kg/m^2'.format(X_patient.iloc[0]['bmi']))
-
-if X_patient.iloc[0]['gender_Female']==1:
-    st.write('Gender: Female')
-else:
-    st.write('Gender: Male')
-
-if X_patient.iloc[0]['ethnicity_African American']==1:
-    st.write('Ethnicity: African American')
-elif X_patient.iloc[0]['ethnicity_Asian']==1:
-    st.write('Ethnicity: Asian')
-elif X_patient.iloc[0]['ethnicity_Caucasian']==1:
-    st.write('Ethnicity: Caucasian')
-elif X_patient.iloc[0]['ethnicity_Hispanic']==1:
-    st.write('Ethnicity: Hispanic')
-elif X_patient.iloc[0]['ethnicity_Native American']==1:
-    st.write('Ethnicity: Native American')
-elif X_patient.iloc[0]['ethnicity_Other/Unknown']==1:
-    st.write('Ethnicity: Other/Unknown')
-else:
-    st.write('Error in ethnicity')
-
-if X_patient.iloc[0]['unitstaytype_admit']==1:
-    st.write('Unit Stay Type: Admit')
-elif X_patient.iloc[0]['unitstaytype_readmit']==1:
-    st.write('Unit Stay Type: Re-Admit')
-elif X_patient.iloc[0]['unitstaytype_transfer']==1:
-    st.write('Unit Stay Type: Transfer')
-
-st.write('Verbal: ' + str(X_patient.iloc[0]['verbal']))
-st.write('Motor: ' + str(X_patient.iloc[0]['motor']))
-st.write('Eyes: ' + str(X_patient.iloc[0]['eyes']))
-st.write('Thrombolytics: ' + str(bool(X_patient.iloc[0]['thrombolytics'])))
-st.write('AIDS: ' + str(bool(X_patient.iloc[0]['aids'])))
-st.write('Hepatic Failure: ' + str(bool(X_patient.iloc[0]['hepaticfailure'])))
-st.write('Lymphoma: ' + str(bool(X_patient.iloc[0]['lymphoma'])))
-st.write('Metastitic Cancer: ' + str(bool(X_patient.iloc[0]['metastaticcancer'])))
-st.write('Leukemia: ' + str(bool(X_patient.iloc[0]['leukemia'])))
-st.write('Immunosuppression: ' + str(bool(X_patient.iloc[0]['immunosuppression'])))
-st.write('Cirrhosis: ' + str(bool(X_patient.iloc[0]['cirrhosis'])))
-st.write('Active Treatment: ' + str(bool(X_patient.iloc[0]['activetx'])))
-st.write('Internal Mammary Artery Graft: ' + str(bool(X_patient.iloc[0]['ima'])))
-st.write('MI within 6 months: ' + str(bool(X_patient.iloc[0]['midur'])))
-st.write('Ventilated: ' + str(bool(X_patient.iloc[0]['oobventday1'])))
-st.write('Intubated: ' + str(bool(X_patient.iloc[0]['oobintubday1'])))
-st.write('Diabetes: ' + str(bool(X_patient.iloc[0]['diabetes'])))
-st.write('Visit Number: ' + str(X_patient.iloc[0]['visitnumber']))
-st.write('Average HR on Day 1 of ICU: {:.1f}'.format(X_patient.iloc[0]['heartrate']))
+# patientName= st.radio("Patient Number", ['Patient1', 'Patient2'])
+# st.write('You selected ' + patientName)
+# st.write('-----')
 
 
 
+#X_patient = pd.read_csv(patientName + '.csv')
+if filename is not None:
+    X_patient = pd.read_csv(filename)
+    st.write(X_patient)
 
+    model_name_pickle_read = ('models/model_2020_06_11_2128.pickle')
+    scaler_name_pickle_read = ('models/scaler_2020_06_11_2128.pickle')
 
-model_name_pickle_read = ('models/model_2020_06_11_2128.pickle')
-scaler_name_pickle_read = ('models/scaler_2020_06_11_2128.pickle')
+    clf = pickle.load(open(model_name_pickle_read, 'rb'))
+    scaler = pickle.load(open(scaler_name_pickle_read, 'rb'))
 
-clf = pickle.load(open(model_name_pickle_read, 'rb'))
-scaler = pickle.load(open(scaler_name_pickle_read, 'rb'))
+    X_test_sc = scaler.transform(X_patient)
+    y_probs = clf.predict_proba(X_test_sc)[:,1]
 
-X_test_sc = scaler.transform(X_patient)
-y_probs = clf.predict_proba(X_test_sc)[:,1]
+    st.write('-----')
+    st.write('The risk of VTE is: {:.2f}%'.format((100*y_probs[0])))
 
-st.write('-----')
-st.write('The risk of VTE is: {:.2f}%'.format((100*y_probs[0])))
+    if 100*y_probs[0] >  0.2:
+        st.write('It is recommended that you administer propylaxis and monitor the patient for VTE')
+    else:
+        st.write('Administering propylaxis for this patient is not recommended')
+
 # if streamlit_status == 1:
 #     age = 30
 #     admissionweight = 50
