@@ -57,11 +57,11 @@ if filename is not None:
     X_patient = pd.read_csv(filename)
     st.write(X_patient)
 
-    model_name_pickle_read = ('models/model_2020_06_11_2128.pickle')
-    scaler_name_pickle_read = ('models/scaler_2020_06_11_2128.pickle')
+    filename_pickle = ('models/model_scaler_2020_06_13_1921.pickle')
+    model_and_scaler = pickle.load(open(filename_pickle, 'rb'))
 
-    clf = pickle.load(open(model_name_pickle_read, 'rb'))
-    scaler = pickle.load(open(scaler_name_pickle_read, 'rb'))
+    clf = model_and_scaler['model']
+    scaler = model_and_scaler['scaler']
 
     X_test_sc = scaler.transform(X_patient)
     y_probs = clf.predict_proba(X_test_sc)[:,1]
@@ -69,8 +69,8 @@ if filename is not None:
     st.write('-----')
     st.write('The risk of VTE is: {:.2f}%'.format((100*y_probs[0])))
 
-    if 100*y_probs[0] >  0.2:
-        st.write('It is recommended that you administer propylaxis and monitor the patient for VTE')
+    if 100*y_probs[0] >  0.35:
+        st.write('It is recommended that you administer propylaxis and monitor the patient for VTE.b')
     else:
         st.write('Administering propylaxis for this patient is not recommended')
 
