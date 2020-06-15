@@ -70,7 +70,7 @@ if filename is not None:
     st.write('The risk of VTE is: {:.2f}%'.format((100*y_probs[0])))
 
     if 100*y_probs[0] >  0.35:
-        st.write('It is recommended that you administer propylaxis and monitor the patient for VTE.b')
+        st.write('It is recommended that you administer propylaxis and monitor the patient for VTE.')
     else:
         st.write('Administering propylaxis for this patient is not recommended')
 
