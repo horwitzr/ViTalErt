@@ -43,27 +43,40 @@ def doPrediction(model_and_scaler, X_test):
     feature_mask = model_and_scaler['feature_mask']
     vars_cont = model_and_scaler['vars_cont']
     vars_categ = model_and_scaler['vars_categ']
+    y_probs_TRAIN_mean = model_and_scaler['y_probs_TRAIN_mean']
 
     X_test_sc = np.concatenate([scaler.transform(X_test[vars_cont]), \
                              X_test[vars_categ].to_numpy()], axis=1)
     X_test_imp     = X_test_sc[:,feature_mask]
     y_probs = clf.predict_proba(X_test_imp)[:,1]
+    y_probs = y_probs[0]
 
+    risk = y_probs/y_probs_TRAIN_mean
     st.write('-----')
-    st.write('The risk of VTE is: {:.2f}%'.format((100*y_probs[0])))
+    st.write("Relative to the average adult ICU patient not previously \
+                        diagnosed with VTE upon admission or within the first \
+                        24 hours of ICU visit, the risk of VTE is {:.2f} times greater." \
+                        .format(risk))
+    # st.write('The risk of VTE is: {:.2f}%'.format((100*y_probs)))
+    #
+    # if y_probs >  thresh:
+    #     st.write('It is recommended that you administer propylaxis and monitor the patient for VTE.')
+    # else:
+    #     st.write('Administering propylaxis for this patient is not recommended.')
 
-    if y_probs[0] >  thresh:
+    if y_probs >  thresh:
         st.write('It is recommended that you administer propylaxis and monitor the patient for VTE.')
     else:
         st.write('Administering propylaxis for this patient is not recommended.')
 #########################################
 #########################################
 # Load model
-filename_pickle = ('models/model_scaler_logRegr_featsel2020_06_18_2033.pickle')
+filename_pickle = ('models/model_scaler_logRegr_featsel2020_06_19_0609.pickle')
 model_and_scaler = pickle.load(open(filename_pickle, 'rb'))
 
 # Define threshold
 thresh = 0.38
+
 
 
 st.title('ViTalErt: Risk Monitoring for Venous Thromboembolism in ICU Patients')
@@ -91,14 +104,14 @@ else:
     age = st.slider('Age', 19, 90, 50)
     admissionweight = st.slider('Admission Weight (kg)', 40, 250, 75)
     visitnumber = st.slider('ICU Visit Number', 1, 10, 1)
-    heartrate = st.slider('Heart Rate (bpm)', 40, 170)
-    aids = st.selectbox('AIDS?',\
-                        ('Yes', 'No'))
-    ima = st.selectbox('Internal Mammary Artery Graft?', \
-                        ('Yes', 'No'))
-    midur = st.selectbox('Heart Attack within 6 Months?',\
-                        ('Yes', 'No'))
-    oobintubday1 = st.selectbox('Intubated?', ('Yes', 'No'))
+    heartrate = st.slider('Heart Rate (bpm)', 40, 170, 70)
+    aids = st.radio('AIDS?',\
+                        ('No', 'Yes'))
+    ima = st.radio('Internal Mammary Artery Graft?', \
+                        ('No', 'Yes'))
+    midur = st.radio('Heart Attack within 6 Months?',\
+                        ('No', 'Yes'))
+    oobintubday1 = st.radio('Intubated?', ('No', 'Yes'))
 
     d   = {'age': age, \
             'admissionweight': admissionweight, \
