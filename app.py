@@ -67,15 +67,18 @@ thresh = 0.38
 
 
 st.title('ViTalErt: Risk Monitoring for Venous Thromboembolism in ICU Patients')
-st.write('Select an option from the sidebar on the left.')
 
 filename = None
 
-option_list = ['Select an example patient', 'Upload your own csv file']
+option_list = ['Select an example patient', \
+               'Upload your own csv file', \
+               'Create a hypothetical patient']
 
 x = st.sidebar.radio('Choose an option', option_list)
 if x == option_list[0]:
-    mypatient = st.selectbox('Select a patient',('Patient1', 'Patient2'))
+    mypatient = st.selectbox('Select a patient',\
+                        ('Patient1', 'Patient2', 'Patient3', \
+                        'Patient4', 'Patient5', 'Patient6'))
     filename = mypatient + '.csv'
     X_patient = readAndDisplay(filename)
     doPrediction(model_and_scaler, X_patient)
@@ -85,4 +88,60 @@ elif x == option_list[1]:
         X_patient = readAndDisplay(filename)
         doPrediction(model_and_scaler, X_patient)
 else:
-    st.write('future is coming')
+    age = st.slider('Age', 19, 90, 50)
+    admissionweight = st.slider('Admission Weight (kg)', 40, 250, 75)
+    visitnumber = st.slider('ICU Visit Number', 1, 10, 1)
+    heartrate = st.slider('Heart Rate (bpm)', 40, 170)
+    aids = st.selectbox('AIDS?',\
+                        ('Yes', 'No'))
+    ima = st.selectbox('Internal Mammary Artery Graft?', \
+                        ('Yes', 'No'))
+    midur = st.selectbox('Heart Attack within 6 Months?',\
+                        ('Yes', 'No'))
+    oobintubday1 = st.selectbox('Intubated?', ('Yes', 'No'))
+
+    d   = {'age': age, \
+            'admissionweight': admissionweight, \
+            'admissionheight': 0, \
+            'bmi': 0, \
+            'gender_Female': 0, \
+            'ethnicity_African American': 0, \
+            'ethnicity_Asian': 0, \
+            'ethnicity_Caucasian': 0, \
+            'ethnicity_Hispanic': 0, \
+            'ethnicity_Native American': 0, \
+            'ethnicity_Other/Unknown': 0, \
+            'verbal': 0, \
+            'motor': 0, \
+            'eyes': 0, \
+            'thrombolytics': 0, \
+            'aids': aids, \
+            'hepaticfailure': 0, \
+            'lymphoma': 0, \
+            'metastaticcancer': 0, \
+            'leukemia': 0, \
+            'immunosuppression': 0, \
+            'cirrhosis': 0, \
+            'activetx': 0, \
+            'ima': ima, \
+            'midur': midur, \
+            'oobventday1': 0, \
+            'oobintubday1': oobintubday1, \
+            'diabetes': 0, \
+            'visitnumber': visitnumber, \
+            'heartrate': heartrate
+            }
+    X_patient = pd.DataFrame({k: [v] for k, v in d.items()})
+    X_patient = X_patient.replace('Yes', 1)
+    X_patient = X_patient.replace('No', 0)
+
+    doPrediction(model_and_scaler, X_patient)
+    X_patient_usedfeats = X_patient[['age', \
+                                    'admissionweight', \
+                                    'visitnumber', \
+                                    'heartrate', \
+                                    'aids', \
+                                    'ima', \
+                                    'midur', \
+                                    'oobintubday1']]
+    st.write(X_patient_usedfeats)
