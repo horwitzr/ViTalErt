@@ -59,7 +59,7 @@ def doPrediction(model_and_scaler, X_test):
 #########################################
 #########################################
 # Load model
-filename_pickle = ('models/model_scaler_logRegr_featsel2020_06_18_2003.pickle')
+filename_pickle = ('models/model_scaler_logRegr_featsel2020_06_18_2033.pickle')
 model_and_scaler = pickle.load(open(filename_pickle, 'rb'))
 
 # Define threshold
