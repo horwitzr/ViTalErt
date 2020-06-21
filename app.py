@@ -53,9 +53,9 @@ def doPrediction(model_and_scaler, X_test):
 
     risk = y_probs/y_probs_TRAIN_mean
     st.write('-----')
-    st.write("Relative to the average adult ICU patient not previously \
+    st.write("Relative to the average adult ICU patient not \
                         diagnosed with VTE upon admission or within the first \
-                        24 hours of ICU visit, the risk of VTE is {:.2f} times greater." \
+                        24 hours of the current ICU visit, the risk of VTE is {:.2f} times greater." \
                         .format(risk))
     # st.write('The risk of VTE is: {:.2f}%'.format((100*y_probs)))
     #
@@ -71,7 +71,7 @@ def doPrediction(model_and_scaler, X_test):
 #########################################
 #########################################
 # Load model
-filename_pickle = ('models/model_scaler_logRegr_featsel2020_06_19_0609.pickle')
+filename_pickle = ('models/model_scaler_logRegr_featsel2020_06_20_2302.pickle')
 model_and_scaler = pickle.load(open(filename_pickle, 'rb'))
 
 # Define threshold
