@@ -75,7 +75,7 @@ filename_pickle = ('models/model_scaler_logRegr_featsel2020_06_19_0609.pickle')
 model_and_scaler = pickle.load(open(filename_pickle, 'rb'))
 
 # Define threshold
-thresh = 0.38
+thresh = 0.441
 
 
 
