@@ -57,12 +57,6 @@ def doPrediction(model_and_scaler, X_test):
                         diagnosed with VTE upon admission or within the first \
                         24 hours of the current ICU visit, the risk of VTE is {:.2f} times greater." \
                         .format(risk))
-    # st.write('The risk of VTE is: {:.2f}%'.format((100*y_probs)))
-    #
-    # if y_probs >  thresh:
-    #     st.write('It is recommended that you administer propylaxis and monitor the patient for VTE.')
-    # else:
-    #     st.write('Administering propylaxis for this patient is not recommended.')
 
     if y_probs >  thresh:
         st.write('It is recommended that you administer propylaxis and monitor the patient for VTE.')
@@ -83,9 +77,9 @@ st.title('ViTalErt: Risk Monitoring for Venous Thromboembolism in ICU Patients')
 
 filename = None
 
-option_list = ['Select an example patient', \
-               'Upload your own csv file', \
-               'Create a hypothetical patient']
+option_list = ["Select an example patient", \
+               "Upload your own csv file", \
+               "Manually enter the patient's characteristics"]
 
 x = st.sidebar.radio('Choose an option', option_list)
 if x == option_list[0]:
@@ -157,4 +151,3 @@ else:
                                     'ima', \
                                     'midur', \
                                     'oobintubday1']]
-    st.write(X_patient_usedfeats)
