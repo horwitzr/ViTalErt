@@ -86,7 +86,7 @@ if x == option_list[0]:
     mypatient = st.selectbox('Select a patient',\
                         ('Patient1', 'Patient2', 'Patient3', \
                         'Patient4', 'Patient5', 'Patient6'))
-    filename = mypatient + '.csv'
+    filename = 'example_patients/' + mypatient + '.csv'
     X_patient = readAndDisplay(filename)
     doPrediction(model_and_scaler, X_patient)
 elif x == option_list[1]:
