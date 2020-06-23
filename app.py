@@ -61,9 +61,9 @@ def doPrediction(model_and_scaler, X_test):
                         .format(risk))
 
     if y_probs >  thresh:
-        st.write('It is recommended that you administer propylaxis and monitor the patient for VTE.')
+        st.write('It is recommended that you administer prophylaxis and monitor the patient for VTE.')
     else:
-        st.write('Administering propylaxis for this patient is not recommended.')
+        st.write('Administering prophylaxis for this patient is not recommended.')
     return risk
 
 #########################################
@@ -165,7 +165,7 @@ else:
                                     'oobintubday1']]
 if risk != None:
     plt.bar([1,2], [1,risk])
-    plt.ylim(0,2)
+    plt.ylim(0, max(1.05*risk,2))
     plt.ylabel('VTE Risk')
     plt.xticks(ticks=[1,2], labels=['Average \nICU Patient', 'This Patient'])
     plt.title("This Patient's Risk of VTE Relative to \nThat of Average ICU Patient")
