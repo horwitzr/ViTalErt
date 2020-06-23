@@ -57,57 +57,67 @@ def doPrediction(model_and_scaler, X_test):
     st.write('-----')
     st.write("Relative to the average adult ICU patient not \
                         diagnosed with VTE upon admission or within the first \
-                        24 hours of the current ICU visit, the risk of VTE is {:.2f} times greater." \
+                        24 hours of the current ICU visit, the risk of VTE is {:.2f} times that." \
                         .format(risk))
 
     if y_probs >  thresh:
         st.write('It is recommended that you administer propylaxis and monitor the patient for VTE.')
     else:
         st.write('Administering propylaxis for this patient is not recommended.')
+    return risk
+
 #########################################
 #########################################
 # Load model
 filename_pickle = ('models/model_scaler_logRegr_featsel2020_06_20_2302.pickle')
 model_and_scaler = pickle.load(open(filename_pickle, 'rb'))
+y_probs_TRAIN_mean = model_and_scaler['y_probs_TRAIN_mean']
 
-# Define threshold
+# Define threshold. If the probability is above this threshold, encourage prophylaxis
+# Below this threshold, do not encourage prophylaxis
 thresh = 0.441
-
 
 
 st.title('ViTalErt: Risk Monitoring for Venous Thromboembolism in ICU Patients')
 
 filename = None
+risk = None
 
+# Create radio buttons in sidebar
 option_list = ["Select an example patient", \
                "Upload your own csv file", \
                "Manually enter the patient's characteristics"]
-
 x = st.sidebar.radio('Choose an option', option_list)
+
+# Select pre-defined patient
 if x == option_list[0]:
     mypatient = st.selectbox('Select a patient',\
                         ('Patient1', 'Patient2', 'Patient3', \
                         'Patient4', 'Patient5', 'Patient6'))
     filename = 'example_patients/' + mypatient + '.csv'
     X_patient = readAndDisplay(filename)
-    doPrediction(model_and_scaler, X_patient)
+    risk = doPrediction(model_and_scaler, X_patient)
+
+# Upload your own csv file
 elif x == option_list[1]:
     filename = st.file_uploader("Choose a csv file", type='csv')
     if filename is not None:
         X_patient = readAndDisplay(filename)
-        doPrediction(model_and_scaler, X_patient)
+        risk = doPrediction(model_and_scaler, X_patient)
+
+# Play with the model
 else:
-    age = st.slider('Age', 19, 90, 70)
-    admissionweight = st.slider('Admission Weight (kg)', 40, 250, 108)
-    visitnumber = st.slider('ICU Visit Number', 1, 10, 1)
-    heartrate = st.slider('Heart Rate (bpm)', 40, 170, 88)
-    aids = st.radio('AIDS?',\
+    age = st.sidebar.slider('Age', 19, 90, 70)
+    admissionweight = st.sidebar.slider('Admission Weight (kg)', 40, 250, 108)
+    visitnumber = st.sidebar.slider('ICU Visit Number', 1, 10, 1)
+    heartrate = st.sidebar.slider('Heart Rate (bpm)', 40, 170, 88)
+    aids = st.sidebar.radio('AIDS?',\
                         ('No', 'Yes'))
-    ima = st.radio('Internal Mammary Artery Graft?', \
+    ima = st.sidebar.radio('Internal Mammary Artery Graft?', \
                         ('No', 'Yes'))
-    midur = st.radio('Heart Attack within 6 Months?',\
+    midur = st.sidebar.radio('Heart Attack within 6 Months?',\
                         ('No', 'Yes'))
-    oobintubday1 = st.radio('Intubated?', ('No', 'Yes'))
+    oobintubday1 = st.sidebar.radio('Intubated?', ('No', 'Yes'))
 
     d   = {'age': age, \
             'admissionweight': admissionweight, \
@@ -144,7 +154,7 @@ else:
     X_patient = X_patient.replace('Yes', 1)
     X_patient = X_patient.replace('No', 0)
 
-    doPrediction(model_and_scaler, X_patient)
+    risk = doPrediction(model_and_scaler, X_patient)
     X_patient_usedfeats = X_patient[['age', \
                                     'admissionweight', \
                                     'visitnumber', \
@@ -153,15 +163,25 @@ else:
                                     'ima', \
                                     'midur', \
                                     'oobintubday1']]
-if st.button('Code'):
-    #js = "window.open('https://www.streamlit.io/')"  # New tab or window
-    js = "window.location.href = 'https://github.com/horwitzr/ViTalErt/'"
-    html = '<img src onerror="{}">'.format(js)
-    div = Div(text=html)
-    st.bokeh_chart(div)
-if st.button('Slides'):
-    #js = "window.open('https://www.streamlit.io/')"  # New tab or window
-    js = "window.location.href = 'https://docs.google.com/presentation/d/1HRnvI72UcO8YPx4yXjEM3I97uKo1pPIq6oHjgnra8pU/edit#slide=id.g89385a3c03_0_110'"
-    html = '<img src onerror="{}">'.format(js)
-    div = Div(text=html)
-    st.bokeh_chart(div)
+if risk != None:
+    plt.bar([1,2], [1,risk])
+    plt.ylim(0,2)
+    plt.ylabel('VTE Risk')
+    plt.xticks(ticks=[1,2], labels=['Average \nICU Patient', 'This Patient'])
+    plt.title("This Patient's Risk of VTE Relative to \nThat of Average ICU Patient")
+    st.pyplot()
+
+
+# Create bar plot to visualize risk relative to that of average ICU patient
+# chart_data = pd.DataFrame([1,risk], columns=["a"])
+# plt.bar([1,2], [1,risk])
+# st.pyplot()
+
+
+# Create links to code and slides
+st.markdown("")
+st.markdown("")
+st.markdown("")
+st.markdown("")
+st.markdown('[Code](https://github.com/horwitzr/ViTalErt)')
+st.markdown('[Slides](https://docs.google.com/presentation/d/1HRnvI72UcO8YPx4yXjEM3I97uKo1pPIq6oHjgnra8pU/edit#slide=id.g89385a3c03_0_110)')
