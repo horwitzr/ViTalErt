@@ -28,6 +28,8 @@ import streamlit as st
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import plot_confusion_matrix
 import pickle
+from bokeh.models.widgets import Div
+
 
 #file_name_pickle_read = 'models/model_2020_06_11_1923_week3.pickle'
 #file_name_pickle_read = 'models/model_2020_06_11_1934.pickle'
@@ -95,10 +97,10 @@ elif x == option_list[1]:
         X_patient = readAndDisplay(filename)
         doPrediction(model_and_scaler, X_patient)
 else:
-    age = st.slider('Age', 19, 90, 50)
-    admissionweight = st.slider('Admission Weight (kg)', 40, 250, 75)
+    age = st.slider('Age', 19, 90, 70)
+    admissionweight = st.slider('Admission Weight (kg)', 40, 250, 108)
     visitnumber = st.slider('ICU Visit Number', 1, 10, 1)
-    heartrate = st.slider('Heart Rate (bpm)', 40, 170, 70)
+    heartrate = st.slider('Heart Rate (bpm)', 40, 170, 88)
     aids = st.radio('AIDS?',\
                         ('No', 'Yes'))
     ima = st.radio('Internal Mammary Artery Graft?', \
@@ -151,3 +153,15 @@ else:
                                     'ima', \
                                     'midur', \
                                     'oobintubday1']]
+if st.button('Code'):
+    #js = "window.open('https://www.streamlit.io/')"  # New tab or window
+    js = "window.location.href = 'https://github.com/horwitzr/ViTalErt/'"
+    html = '<img src onerror="{}">'.format(js)
+    div = Div(text=html)
+    st.bokeh_chart(div)
+if st.button('Slides'):
+    #js = "window.open('https://www.streamlit.io/')"  # New tab or window
+    js = "window.location.href = 'https://docs.google.com/presentation/d/1HRnvI72UcO8YPx4yXjEM3I97uKo1pPIq6oHjgnra8pU/edit#slide=id.g89385a3c03_0_110'"
+    html = '<img src onerror="{}">'.format(js)
+    div = Div(text=html)
+    st.bokeh_chart(div)
