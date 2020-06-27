@@ -7,5 +7,13 @@ The data comes from the [eICU Collaborative Research Database](https://eicu-crd.
 # Running the app
 To run the app, cd to the location of the repository and type ```streamlit run app.py``` in the terminal. The URL of the app is https://vitalert.herokuapp.com/.
 
-# Presentation
+# Running the Model
+See requirements.txt for the packages you will need.
+You can run the model with ```notebooks/logisticRegr_model_w_featsel_gridsearch.ipynb```. It assumes that you have pre-processed the data. The variable containing the name of the csv file is ```filename_Xy```. The csv file must contain the following columns:
+
+
+# Slides
 The Google slides for the project can be found at https://docs.google.com/presentation/d/1HRnvI72UcO8YPx4yXjEM3I97uKo1pPIq6oHjgnra8pU/edit
+
+# Credits
+The StratifiedGroupKFold code was copied and pasted from https://github.com/scikit-learn/scikit-learn/issues/13621

@@ -2,15 +2,43 @@ from datetime import datetime
 from sklearn.model_selection._split import _BaseKFold
 from sklearn.model_selection._split import _RepeatedSplits
 import numpy as np
+import pandas as pd
 from collections import defaultdict
 from collections import Counter
 from sklearn.utils import check_random_state
-
+################################################################################
+# now_to_str() returns current date and time as a string as yyyy_mm_dd_hhmm
 def now_to_str():
     now = str(datetime.now())
     return now[0:4] + '_' + now[5:7] + '_' + now[8:10] + '_' + now[11:13] + now[14:16]
 
-# https://github.com/scikit-learn/scikit-learn/issues/13621
+################################################################################
+# createXy() reads the pre-processed data, sets patientunitstayid as the index,
+#    separates X from y, and gets uniquepatientid as a group
+def createXy(dir_read, filename_Xy):
+  Xy = pd.read_csv(dir_read + filename_Xy)
+  Xy = Xy.set_index('patientunitstayid')
+  y = Xy.pop('label')
+  X = Xy.copy()
+  groups = Xy['uniquepid'].astype(
+      'category').cat.codes  # each uniquepid is now a unique number
+  X = X.drop(columns='uniquepid',
+             axis=1)  # remove uniquepid as a feature because it's a group
+
+  vars_categ = ['gender_Female', 'ethnicity_African American', 'ethnicity_Asian', 'ethnicity_Caucasian', \
+               'ethnicity_Hispanic', 'ethnicity_Native American', 'ethnicity_Other/Unknown',\
+               'thrombolytics', 'aids', 'hepaticfailure', 'lymphoma', 'metastaticcancer', 'leukemia', \
+               'immunosuppression', 'cirrhosis', 'activetx', 'ima', 'midur',
+               'oobventday1', 'oobintubday1', 'diabetes']
+  vars_cont = ['age', 'admissionweight', 'admissionheight', 'bmi', \
+               'verbal', 'motor', 'eyes', 'visitnumber', 'heartrate']
+  print('There are ' + str(len(vars_categ)) + ' categorical features')
+  print('There are ' + str(len(vars_cont)) + ' continuous features')
+  X = pd.concat([X[vars_cont], X[vars_categ]], axis=1)
+  return X, y, Xy, groups, vars_categ, vars_cont
+
+################################################################################
+# Copied and pasted from https://github.com/scikit-learn/scikit-learn/issues/13621
 class StratifiedGroupKFold(_BaseKFold):
     """Stratified K-Folds iterator variant with non-overlapping groups.
 
@@ -193,3 +221,16 @@ class RepeatedStratifiedGroupKFold(_RepeatedSplits):
     def __init__(self, n_splits=5, n_repeats=10, random_state=None):
         super().__init__(StratifiedGroupKFold, n_splits=n_splits,
                          n_repeats=n_repeats, random_state=random_state)
+
+################################################################################
+# train_test_split_StratifiedGroupKFold
+def train_test_split_StratifiedGroupKFold(X, y, groups, Nsplits, rand_state):
+    cv = StratifiedGroupKFold(n_splits=Nsplits, shuffle=True, random_state=rand_state)
+    trainval_idx, test_idx = next(cv.split(X, y, groups))
+    X_trainval = X.iloc[trainval_idx]
+    y_trainval = y.iloc[trainval_idx]
+    X_test = X.iloc[test_idx]
+    y_test = y.iloc[test_idx]
+    print('X_trainval has ' + str(X_trainval.shape[0]) + ' unique patientstayids')
+    print('X_test has ' + str(X_test.shape[0]) + ' unique patientstayids')
+    return cv, X_trainval, y_trainval, X_test, y_test
