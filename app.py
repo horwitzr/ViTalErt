@@ -30,6 +30,11 @@ from sklearn.metrics import plot_confusion_matrix
 import pickle
 from bokeh.models.widgets import Div
 
+#########################################
+# from https://www.youtube.com/watch?v=S875ogof5IE
+
+
+#st.markdown(html_temp.format(bgcolor,fontcolor, mynum),unsafe_allow_html=True)
 
 #file_name_pickle_read = 'models/model_2020_06_11_1923_week3.pickle'
 #file_name_pickle_read = 'models/model_2020_06_11_1934.pickle'
@@ -55,15 +60,38 @@ def doPrediction(model_and_scaler, X_test):
 
     risk = y_probs/y_probs_TRAIN_mean
     st.write('-----')
-    st.write("Relative to the average adult ICU patient not \
-                        diagnosed with VTE upon admission or within the first \
-                        24 hours of the current ICU visit, the risk of VTE is {:.2f} times that." \
-                        .format(risk))
+    st.write("This patient's risk of VTE is:")
 
-    if y_probs >  thresh:
-        st.write('It is recommended that you administer prophylaxis and monitor the patient for VTE.')
+    #bgcolor = st.beta_color_picker("Pick a background color", "#fffff0")
+    #fontcolor = st.beta_color_picker('Pick a font color', "#000ff0")
+
+    html_temp = """
+    <div style="background-color:{};">
+
+    <h1 style="color:{};text-align:center">{:.2f}</h1>
+
+    </div>
+    """
+
+    if y_probs > thresh:
+        fontcolor = "#ff0000"
+        str_rec = 'It is recommended that you administer prophylaxis and monitor the patient for VTE.'
     else:
-        st.write('Administering prophylaxis for this patient is not recommended.')
+        fontcolor = "#0000ff"
+        str_rec = 'Administering prophylaxis for this patient is not recommended.'
+
+    st.markdown(html_temp.format("#ffffff",fontcolor, risk),unsafe_allow_html=True)
+    st.write('times that of the average adult ICU patient not diagnosed with VTE \
+                upon admission or within the first 24 hours of the current ICU visit.')
+
+                         #{:.2f} times that." \
+                        #.format(risk))
+    # st.write("Relative to the average adult ICU patient not \
+    #                         diagnosed with VTE upon admission or within the first \
+    #                         24 hours of the current ICU visit, the risk of VTE is {:.2f} times that." \
+    #                         .format(risk))
+
+    st.write(str_rec)
     return risk
 
 #########################################
